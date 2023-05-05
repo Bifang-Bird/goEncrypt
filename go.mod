@@ -1,4 +1,4 @@
-module github.com/wumansgy/goEncrypt
+module github.com/Bifang-Bird/goEncrypt
 
 go 1.16
 
