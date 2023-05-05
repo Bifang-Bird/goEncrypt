@@ -173,6 +173,45 @@ func TestRsaSignBase64(t *testing.T) {
 
 }
 
+func TestRsaSign8Base64(t *testing.T) {
+	base64Key1024, err := GenerateRsa8KeyBase64(1024)
+	assert.Nil(t, err)
+	base64Key2048, err := GenerateRsa8KeyBase64(2048)
+	assert.Nil(t, err)
+	_, err = GenerateRsaKeyBase64(204811)
+	assert.NotNil(t, err)
+
+	base64Sign1024, err := RsaSign8Base64([]byte(msg), base64Key1024.PrivateKey)
+	assert.Nil(t, err)
+	_, err = RsaSign8Base64([]byte(msg), hexPriKey2048)
+	assert.NotNil(t, err)
+	res := RsaVerifySign8Base64([]byte(msg), base64Sign1024, base64Key1024.PublicKey)
+	assert.Equal(t, res, true)
+	res = RsaVerifySign8Base64([]byte(msg), base64Sign1024, base64Key2048.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Base64([]byte(msg), "11111", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Base64([]byte(msg), "11111", base64Key1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Base64([]byte(msg), base64Sign1024, base64Key2048.PublicKey)
+	assert.Equal(t, res, false)
+
+	base64Sign2048, err := RsaSign8Base64([]byte(msg), base64Key2048.PrivateKey)
+	assert.Nil(t, err)
+	res = RsaVerifySign8Base64([]byte(msg), base64Sign2048, base64Key2048.PublicKey)
+	assert.Equal(t, res, true)
+	res = RsaVerifySign8Base64([]byte(msg), base64Sign2048, base64Key1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Base64([]byte(msg), "11111", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Base64([]byte(msg), base64Sign2048, base64Key1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Base64([]byte(msg), base64Sign2048, base64Key1024.PrivateKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Base64([]byte(msg), base64Sign2048, base64Key2048.PrivateKey)
+	assert.Equal(t, res, false)
+}
+
 func TestRsaSignHex(t *testing.T) {
 	hexKey1024, err := GenerateRsaKeyHex(1024)
 	assert.Nil(t, err)
@@ -215,6 +254,52 @@ func TestRsaSignHex(t *testing.T) {
 	res = RsaVerifySignHex([]byte(msg), hexSign2048, hexKey1024.PrivateKey)
 	assert.Equal(t, res, false)
 	res = RsaVerifySignHex([]byte(msg), hexSign2048, hexKey2048.PrivateKey)
+	assert.Equal(t, res, false)
+
+}
+
+func TestRsaSign8Hex(t *testing.T) {
+	hexKey1024, err := GenerateRsa8KeyHex(1024)
+	assert.Nil(t, err)
+	hexKey2048, err := GenerateRsa8KeyHex(2048)
+	assert.Nil(t, err)
+	_, err = GenerateRsaKeyHex(2048111)
+	assert.NotNil(t, err)
+
+	hexSign1024, err := RsaSign8Hex([]byte(msg), hexKey1024.PrivateKey)
+	assert.Nil(t, err)
+	_, err = RsaSign8Hex([]byte(msg), hexKey1024.PublicKey)
+	assert.NotNil(t, err)
+	res := RsaVerifySign8Hex([]byte(msg), hexSign1024, hexKey1024.PublicKey)
+	assert.Equal(t, res, true)
+	res = RsaVerifySign8Hex([]byte(msg), hexSign1024, hexKey2048.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), "11111", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), "282010100db", hexKey1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), hexSign1024, hexKey2048.PublicKey)
+	assert.Equal(t, res, false)
+
+	hexSign2048, err := RsaSign8Hex([]byte(msg), hexKey2048.PrivateKey)
+	assert.Nil(t, err)
+	_, err = RsaSign8Hex([]byte(msg), hexPubKey2048)
+	assert.NotNil(t, err)
+	res = RsaVerifySign8Hex([]byte(msg), hexSign2048, hexKey2048.PublicKey)
+	assert.Equal(t, res, true)
+	res = RsaVerifySign8Hex([]byte(msg), hexSign2048, hexKey1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), "0a0282010100d", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), "0a0282010100d", hexKey1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), "xxxx", "badpubkey")
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), hexSign2048, hexKey1024.PublicKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), hexSign2048, hexKey1024.PrivateKey)
+	assert.Equal(t, res, false)
+	res = RsaVerifySign8Hex([]byte(msg), hexSign2048, hexKey2048.PrivateKey)
 	assert.Equal(t, res, false)
 
 }
