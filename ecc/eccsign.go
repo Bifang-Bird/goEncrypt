@@ -9,8 +9,8 @@ import (
 	"math/big"
 	"runtime"
 
+	"github.com/Bifang-Bird/goEncrypt/hash"
 	log "github.com/sirupsen/logrus"
-	"github.com/wumansgy/goEncrypt/hash"
 )
 
 func eccSign(msg []byte, priKey []byte) (rSign []byte, sSign []byte, err error) {

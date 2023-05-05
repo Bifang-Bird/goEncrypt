@@ -6,11 +6,11 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 
-	"github.com/wumansgy/goEncrypt"
+	"github.com/Bifang-Bird/goEncrypt"
 )
 
 /*
- Ecb is not recommended,use cbc
+Ecb is not recommended,use cbc
 */
 type aesEcb struct {
 	b         cipher.Block

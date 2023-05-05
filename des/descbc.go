@@ -7,14 +7,15 @@ import (
 	"encoding/hex"
 	"runtime"
 
+	"github.com/Bifang-Bird/goEncrypt"
 	log "github.com/sirupsen/logrus"
-	"github.com/wumansgy/goEncrypt"
 )
 
-/**
-1. Group plaintext
-	DES CBC mode encryption and decryption, is an 8-byte block encryption
-	If the group is not an integer multiple of 8, you need to consider completing the 8 bits2.
+/*
+*
+ 1. Group plaintext
+    DES CBC mode encryption and decryption, is an 8-byte block encryption
+    If the group is not an integer multiple of 8, you need to consider completing the 8 bits2.
 */
 func init() {
 	log.SetFormatter(&log.JSONFormatter{})

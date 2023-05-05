@@ -7,14 +7,16 @@ import (
 	"encoding/hex"
 	"runtime"
 
+	"github.com/Bifang-Bird/goEncrypt"
 	log "github.com/sirupsen/logrus"
-	"github.com/wumansgy/goEncrypt"
 )
 
-/**
-	Triple des encryption and decryption
-      algorithm : Encryption: key one encryption -> key two decryption -> key three encryption
-                  Decryption: key three decryption -> key two encryption -> key one decryption
+/*
+*
+
+		Triple des encryption and decryption
+	      algorithm : Encryption: key one encryption -> key two decryption -> key three encryption
+	                  Decryption: key three decryption -> key two encryption -> key one decryption
 */
 func TripleDesEncrypt(plainText, secretKey, ivDes []byte) (cipherText []byte, err error) {
 	if len(secretKey) != 24 {
@@ -93,12 +95,12 @@ func TripleDesEncryptBase64(plainText, secretKey, ivAes []byte) (cipherTextBase6
 	return base64.StdEncoding.EncodeToString(encryBytes), err
 }
 
-func TripleDesEncryptHex(plainText, secretKey, ivAes []byte) (cipherTextHex string,err error) {
+func TripleDesEncryptHex(plainText, secretKey, ivAes []byte) (cipherTextHex string, err error) {
 	encryBytes, err := TripleDesEncrypt(plainText, secretKey, ivAes)
 	return hex.EncodeToString(encryBytes), err
 }
 
-func TripleDesDecryptByBase64(cipherTextBase64 string, secretKey, ivAes []byte) (plainText []byte,err error) {
+func TripleDesDecryptByBase64(cipherTextBase64 string, secretKey, ivAes []byte) (plainText []byte, err error) {
 	plainTextBytes, err := base64.StdEncoding.DecodeString(cipherTextBase64)
 	if err != nil {
 		return []byte{}, err
