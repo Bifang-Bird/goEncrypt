@@ -29,8 +29,8 @@ func rsaSign8(msg, priKey []byte) (sign []byte, err error) {
 
 	privateKey := privateKey8.(*rsa.PrivateKey)
 
-	hashed := hash.Sha256(msg)
-	sign, err = rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed)
+	hashed := hash.Sha1(msg)
+	sign, err = rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA1, hashed)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +55,8 @@ func rsaVerifySign8(msg []byte, sign []byte, pubKey []byte) bool {
 	if err != nil {
 		return false
 	}
-	hashed := hash.Sha256(msg)
-	result := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed, sign)
+	hashed := hash.Sha1(msg)
+	result := rsa.VerifyPKCS1v15(publicKey, crypto.SHA1, hashed, sign)
 	return result == nil
 }
 
