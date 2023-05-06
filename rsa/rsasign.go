@@ -132,7 +132,7 @@ func RsaSignPkcs8Sha1Base64(msg []byte, base64PriKey string) (base64Sign string,
 	return base64.StdEncoding.EncodeToString(sign), nil
 }
 
-// 验签，pkcs8 sha1算法
+// 验签：pkcs8 sha1算法
 func RsaVerifySignPkcs8Sha1Base64(msg []byte, base64Sign, base64PubKey string) bool {
 	signBytes, err := base64.StdEncoding.DecodeString(base64Sign)
 	if err != nil {
@@ -145,7 +145,7 @@ func RsaVerifySignPkcs8Sha1Base64(msg []byte, base64Sign, base64PubKey string) b
 	return rsaVerifySignPkcs8Sha1(msg, signBytes, pubBytes)
 }
 
-// 验签，pkcs1 sha1算法
+// 验签：pkcs1 sha1算法
 func RsaVerifySignPkcs1Sha1Base64(msg []byte, base64Sign, base64PubKey string) bool {
 	signBytes, err := base64.StdEncoding.DecodeString(base64Sign)
 	if err != nil {
