@@ -13,6 +13,25 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func rsaSign(msg, priKey []byte) (sign []byte, err error) {
+	defer func() {
+		if err := recover(); err != nil {
+			switch err.(type) {
+			case runtime.Error:
+				log.Errorf("runtime err=%v,Check that the key or text is correct", err)
+			default:
+				log.Errorf("error=%v,check the cipherText ", err)
+			}
+		}
+	}()
+	privateKey, err := x509.ParsePKCS1PrivateKey(priKey)
+	hashed := hash.Sha256(msg)
+	sign, err = rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed)
+	if err != nil {
+		return nil, err
+	}
+	return sign, nil
+}
 func rsaSign8(msg, priKey []byte) (sign []byte, err error) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -36,8 +55,27 @@ func rsaSign8(msg, priKey []byte) (sign []byte, err error) {
 	}
 	return sign, nil
 }
+func rsaVerifySignPkcs1Sha256(msg []byte, sign []byte, pubKey []byte) bool {
+	defer func() {
+		if err := recover(); err != nil {
+			switch err.(type) {
+			case runtime.Error:
+				log.Errorf("runtime err=%v,Check that the key or text is correct", err)
+			default:
+				log.Errorf("error=%v,check the cipherText ", err)
+			}
+		}
+	}()
+	publicKey, err := x509.ParsePKCS1PublicKey(pubKey)
+	if err != nil {
+		return false
+	}
+	hashed := hash.Sha256(msg)
+	result := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed, sign)
+	return result == nil
+}
 
-func rsaVerifySign8(msg []byte, sign []byte, pubKey []byte) bool {
+func rsaVerifySignPkcs8Sha1(msg []byte, sign []byte, pubKey []byte) bool {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -59,8 +97,30 @@ func rsaVerifySign8(msg []byte, sign []byte, pubKey []byte) bool {
 	result := rsa.VerifyPKCS1v15(publicKey, crypto.SHA1, hashed, sign)
 	return result == nil
 }
+func rsaVerifySignPkcs1Sha1(msg []byte, sign []byte, pubKey []byte) bool {
+	defer func() {
+		if err := recover(); err != nil {
+			switch err.(type) {
+			case runtime.Error:
+				log.Errorf("runtime err=%v,Check that the key or text is correct", err)
+			default:
+				log.Errorf("error=%v,check the cipherText ", err)
+			}
+		}
+	}()
+	publicKey, err := x509.ParsePKCS1PublicKey(pubKey)
+	// publicKey8, err := x509.ParsePKIXPublicKey(pubKey)
+	// publicKey := publicKey8.(*rsa.PublicKey)
 
-func RsaSign8Base64(msg []byte, base64PriKey string) (base64Sign string, err error) {
+	if err != nil {
+		return false
+	}
+	hashed := hash.Sha1(msg)
+	result := rsa.VerifyPKCS1v15(publicKey, crypto.SHA1, hashed, sign)
+	return result == nil
+}
+
+func RsaSignPkcs8Sha1Base64(msg []byte, base64PriKey string) (base64Sign string, err error) {
 	priBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {
 		return "", err
@@ -72,7 +132,8 @@ func RsaSign8Base64(msg []byte, base64PriKey string) (base64Sign string, err err
 	return base64.StdEncoding.EncodeToString(sign), nil
 }
 
-func RsaVerifySign8Base64(msg []byte, base64Sign, base64PubKey string) bool {
+// 验签，pkcs8 sha1算法
+func RsaVerifySignPkcs8Sha1Base64(msg []byte, base64Sign, base64PubKey string) bool {
 	signBytes, err := base64.StdEncoding.DecodeString(base64Sign)
 	if err != nil {
 		return false
@@ -81,7 +142,20 @@ func RsaVerifySign8Base64(msg []byte, base64Sign, base64PubKey string) bool {
 	if err != nil {
 		return false
 	}
-	return rsaVerifySign8(msg, signBytes, pubBytes)
+	return rsaVerifySignPkcs8Sha1(msg, signBytes, pubBytes)
+}
+
+// 验签，pkcs1 sha1算法
+func RsaVerifySignPkcs1Sha1Base64(msg []byte, base64Sign, base64PubKey string) bool {
+	signBytes, err := base64.StdEncoding.DecodeString(base64Sign)
+	if err != nil {
+		return false
+	}
+	pubBytes, err := base64.StdEncoding.DecodeString(base64PubKey)
+	if err != nil {
+		return false
+	}
+	return rsaVerifySignPkcs1Sha1(msg, signBytes, pubBytes)
 }
 
 func RsaSign8Hex(msg []byte, hexPriKey string) (hexSign string, err error) {
@@ -105,47 +179,7 @@ func RsaVerifySign8Hex(msg []byte, hexSign, hexPubKey string) bool {
 	if err != nil {
 		return false
 	}
-	return rsaVerifySign8(msg, signBytes, pubBytes)
-}
-
-func rsaSign(msg, priKey []byte) (sign []byte, err error) {
-	defer func() {
-		if err := recover(); err != nil {
-			switch err.(type) {
-			case runtime.Error:
-				log.Errorf("runtime err=%v,Check that the key or text is correct", err)
-			default:
-				log.Errorf("error=%v,check the cipherText ", err)
-			}
-		}
-	}()
-	privateKey, err := x509.ParsePKCS1PrivateKey(priKey)
-	hashed := hash.Sha256(msg)
-	sign, err = rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed)
-	if err != nil {
-		return nil, err
-	}
-	return sign, nil
-}
-
-func rsaVerifySign(msg []byte, sign []byte, pubKey []byte) bool {
-	defer func() {
-		if err := recover(); err != nil {
-			switch err.(type) {
-			case runtime.Error:
-				log.Errorf("runtime err=%v,Check that the key or text is correct", err)
-			default:
-				log.Errorf("error=%v,check the cipherText ", err)
-			}
-		}
-	}()
-	publicKey, err := x509.ParsePKCS1PublicKey(pubKey)
-	if err != nil {
-		return false
-	}
-	hashed := hash.Sha256(msg)
-	result := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed, sign)
-	return result == nil
+	return rsaVerifySignPkcs8Sha1(msg, signBytes, pubBytes)
 }
 
 func RsaSignBase64(msg []byte, base64PriKey string) (base64Sign string, err error) {
@@ -169,7 +203,7 @@ func RsaVerifySignBase64(msg []byte, base64Sign, base64PubKey string) bool {
 	if err != nil {
 		return false
 	}
-	return rsaVerifySign(msg, signBytes, pubBytes)
+	return rsaVerifySignPkcs1Sha256(msg, signBytes, pubBytes)
 }
 
 func RsaSignHex(msg []byte, hexPriKey string) (hexSign string, err error) {
@@ -193,5 +227,5 @@ func RsaVerifySignHex(msg []byte, hexSign, hexPubKey string) bool {
 	if err != nil {
 		return false
 	}
-	return rsaVerifySign(msg, signBytes, pubBytes)
+	return rsaVerifySignPkcs1Sha256(msg, signBytes, pubBytes)
 }
