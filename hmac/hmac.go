@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"strings"
 )
 
 func HmacSignSha256(secret string, datas string) (string, error) {
@@ -29,7 +30,7 @@ func HmacVerifySignSha256(originSign string, secret string, datas string) bool {
 		return false
 	}
 
-	if sign != originSign {
+	if !strings.EqualFold(sign, originSign) {
 		return false
 	}
 
